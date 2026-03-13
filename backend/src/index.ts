@@ -9,8 +9,8 @@ const app: Express = express();
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',                   // Permite o teu React local
-    'https://dance-school-app-steel.vercel.app' // Permite o teu site oficial no Vercel
+    'http://localhost:5173',                   // Permite o React local
+    'https://dance-school-app-steel.vercel.app' // Permite o site no Vercel
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
