@@ -46,4 +46,4 @@ export const listarUtilizadores = async (req: Request, res: Response) => {
     } catch (error) {
       res.status(500).json({ erro: "Erro ao procurar utilizadores." });
     }
-  };
+};
