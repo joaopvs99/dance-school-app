@@ -25,7 +25,7 @@ The project follows a **Monorepo** structure to keep the codebase organized:
 The application is automatically deployed via GitHub Actions/Hooks:
 
 - **Frontend (Vercel)**: https://dance-school-app-steel.vercel.app
-- **Backend API (Render)**: https://escola-danca-api.onrender.com
+- **Backend API (Render)**: https://dance-school-app-skz9.onrender.com
 
 ## Development Team
 
