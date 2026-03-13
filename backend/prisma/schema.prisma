@@ -1,0 +1,102 @@
+// ==========================================
+// CONFIGURAÇÕES DO PRISMA
+// ==========================================
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// MODELOS DE DADOS (TABELAS)
+// ==========================================
+
+// O Utilizador que faz login (Encarregado de Educação, Professor ou Direção)
+model Utilizador {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  password  String   // Encriptada com bcrypt
+  role      Role     @default(ENCARREGADO)
+  
+  // Relações: Um utilizador pode ter vários educandos (irmãos) e vários artigos para troca
+  educandos Aluno[]
+  artigos   ArtigoTroca[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// O Aluno da escola (A regra de negócio do NumAluno)
+model Aluno {
+  id             Int      @id @default(autoincrement())
+  numAluno       String   @unique // Ex: "A1234" - Atribuído pela direção
+  nome           String
+  dataNascimento DateTime
+
+  // Relação opcional: O aluno pode existir no sistema antes do pai criar conta
+  utilizadorId   Int?     
+  encarregado    Utilizador? @relation(fields: [utilizadorId], references: [id])
+
+  // Relações
+  sessoes        SessaoCoaching[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// O agendamento das aulas extra (A regra das 48 horas aplica-se aqui no Express)
+model SessaoCoaching {
+  id          Int      @id @default(autoincrement())
+  dataHora    DateTime
+  estado      EstadoSessao @default(AGENDADA)
+  
+  // Relação: Quem vai ter a sessão
+  alunoId     Int
+  aluno       Aluno    @relation(fields: [alunoId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// O Quadro de Trocas de Figurinos (Integração com Cloudinary)
+model ArtigoTroca {
+  id           Int      @id @default(autoincrement())
+  titulo       String
+  descricao    String?
+  tamanho      String
+  fotoUrl      String   // Aqui guardamos o link gerado pelo Cloudinary!
+  estado       EstadoArtigo @default(DISPONIVEL)
+
+  // Relação: Quem publicou o artigo
+  utilizadorId Int
+  dono         Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ==========================================
+// ENUMS (Listas de valores fixos)
+// ==========================================
+enum Role {
+  DIRECAO
+  PROFESSOR
+  ENCARREGADO
+}
+
+enum EstadoSessao {
+  AGENDADA
+  CONCLUIDA
+  CANCELADA
+}
+
+enum EstadoArtigo {
+  DISPONIVEL
+  TROCADO
+  REMOVIDO
+  MANUTENCAO
+}
