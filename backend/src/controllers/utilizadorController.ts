@@ -30,3 +30,20 @@ export const criarUtilizador = async (req: Request, res: Response) => {
     res.status(500).json({ erro: "Erro ao criar utilizador. O email já pode existir." });
   }
 };
+
+export const listarUtilizadores = async (req: Request, res: Response) => {
+    try {
+      const utilizadores = await prisma.utilizador.findMany({
+        select: { // Escolhemos o que queremos devolver (não enviamos a password!)
+          id: true,
+          nome: true,
+          email: true,
+          role: true,
+          createdAt: true
+        }
+      });
+      res.json(utilizadores);
+    } catch (error) {
+      res.status(500).json({ erro: "Erro ao procurar utilizadores." });
+    }
+  };
